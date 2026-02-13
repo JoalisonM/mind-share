@@ -16,7 +16,7 @@ export class AuthService {
 
     const compare = await comparePassword(data.password, existingUser.password);
 
-    if (!existingUser) throw new Error("Senha inválida!");
+    if (!compare) throw new Error("Senha inválida!");
 
     return this.generateTokens(existingUser);
   }

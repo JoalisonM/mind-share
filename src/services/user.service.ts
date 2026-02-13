@@ -14,6 +14,10 @@ export class UserService {
     return user;
   }
 
+  async listUsers() {
+    return await prismaClient.user.findMany();
+  }
+
   async createUser(data: CreateUserInput) {
     const findUser = await prismaClient.user.findUnique({
       where: {
@@ -23,7 +27,7 @@ export class UserService {
 
     if (findUser) throw new Error("Usuário já cadastrado!");
 
-    return prismaClient.user.create({
+    return await prismaClient.user.create({
       data: {
         name: data.name,
         email: data.email,
