@@ -1,7 +1,20 @@
+import { Arg } from "type-graphql";
 import { prismaClient } from "../../prisma/prisma";
 import { CreateIdeaInput, UpdateIdeaInput } from "../dtos/input/idea.input";
 
 export class IdeaService {
+  async findIdeaById(id: string) {
+    const idea = await prismaClient.idea.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!idea) throw new Error("Idea não existe");
+
+    return idea;
+  }
+
   async listIdeas() {
     return await prismaClient.idea.findMany();
   }
@@ -43,6 +56,6 @@ export class IdeaService {
 
     if (!idea) throw new Error("Idea não encontrada");
 
-    return prismaClient.idea.delete({ where: { id } });
+    return await prismaClient.idea.delete({ where: { id } });
   }
 }

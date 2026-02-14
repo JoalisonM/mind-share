@@ -15,12 +15,18 @@ import { User } from "../../generated/prisma/client";
 import { IsAuth } from "../middlewares/auth.middleware";
 import { UserModel } from "../models/user.model";
 import { UserService } from "../services/user.service";
+import { CommentModel } from "../models/comment.model";
+import { CommentService } from "../services/comment.service";
+import { VoteModel } from "../models/vote.mode";
+import { VoteService } from "../services/vote.service";
 
 @Resolver(() => IdeaModel)
 @UseMiddleware(IsAuth)
 export class IdeaResolver {
   private ideaService = new IdeaService();
   private userService = new UserService();
+  private commentService = new CommentService();
+  private voteService = new VoteService();
 
   @Mutation(() => IdeaModel)
   async createIdea(
@@ -53,5 +59,20 @@ export class IdeaResolver {
   @FieldResolver(() => UserModel)
   async author(@Root() idea: IdeaModel): Promise<UserModel> {
     return await this.userService.findUser(idea.authorId);
+  }
+
+  @FieldResolver(() => [CommentModel])
+  async comments(@Root() idea: IdeaModel): Promise<CommentModel[]> {
+    return await this.commentService.listCommentsByIdea(idea.id);
+  }
+
+  @FieldResolver(() => [CommentModel])
+  async votes(@Root() idea: IdeaModel): Promise<VoteModel[]> {
+    return await this.voteService.listVotesByIdea(idea.id);
+  }
+
+  @FieldResolver(() => Number)
+  async countVotes(@Root() idea: IdeaModel): Promise<Number> {
+    return await this.voteService.countVotes(idea.id);
   }
 }
