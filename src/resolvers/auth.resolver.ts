@@ -8,7 +8,7 @@ export class AuthResolver {
   private authService = new AuthService();
 
   @Mutation(() => LoginOutput)
-  async Login(
+  async login(
     @Arg("data", () => LoginInput) data: LoginInput,
   ): Promise<LoginOutput> {
     return this.authService.login(data);

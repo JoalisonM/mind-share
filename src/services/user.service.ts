@@ -1,5 +1,5 @@
 import { prismaClient } from "../../prisma/prisma";
-import { CreateUserInput } from "../dtos/input/user.input";
+import { CreateUserInput, UpdateUserInput } from "../dtos/input/user.input";
 
 export class UserService {
   async findUser(id: string) {
@@ -31,7 +31,40 @@ export class UserService {
       data: {
         name: data.name,
         email: data.email,
+        role: data.role,
       },
     });
+  }
+
+  async updateUser(id: string, data: UpdateUserInput) {
+    const user = await prismaClient.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) throw new Error("Usuário não existe");
+
+    return await prismaClient.user.update({
+      where: { id },
+      data: {
+        name: data.name ?? undefined,
+        email: data.email ?? undefined,
+        role: data.role,
+      },
+    });
+  }
+
+  async deleteUser(id: string) {
+    const user = await prismaClient.user.findUnique({
+      where: { id },
+    });
+    if (!user) throw new Error("Usuário não existe");
+
+    await prismaClient.user.delete({
+      where: { id },
+    });
+
+    return true;
   }
 }
